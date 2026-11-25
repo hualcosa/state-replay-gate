@@ -1,0 +1,118 @@
+{
+  "expected": {
+    "arm_c": "wrong_payment",
+    "arm_d": "correct_stop",
+    "gate": {
+      "failed_rules": [
+        "within_auto_approve_limit"
+      ],
+      "verdict": "review"
+    },
+    "harm_if_paid": {
+      "amount_minor": 42000,
+      "explanation": "$420.00 would be paid without the human approval policy v8 requires.",
+      "type": "unapproved_payout"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 42000,
+    "t1_should_pay": false,
+    "why": "A $420.00 refund is above the new $250.00 limit, so it needs a human approval."
+  },
+  "hero": false,
+  "id": "S06",
+  "kind": "mutation",
+  "mutation": {
+    "actor": "finance",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "auto_approve_limit_lowered",
+    "label": "Auto-approve limit lowered",
+    "narrative": "Finance lowered the auto-approve limit from $500.00 to $250.00 in policy v8.",
+    "ops": [
+      {
+        "op": "replace",
+        "path": "/policy/auto_approve_limit_minor",
+        "value": 25000
+      },
+      {
+        "op": "replace",
+        "path": "/policy/version",
+        "value": 8
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "slug": "limit-lowered",
+  "story": {
+    "setup": "A customer asks for a $420.00 refund on an espresso machine, and the return is back at the warehouse.",
+    "stakes": "Paying automatically now would approve a $420.00 refund that needs a human.",
+    "twist": "Finance lowers the auto-approve limit from $500.00 to $250.00 in policy v8."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-20122",
+        "email": "isaac.moreau@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Isaac Moreau",
+        "shipping_address": "112 Cobalt Street, Marlow, ZZ 00612",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-20122",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Espresso machine",
+            "qty": 1,
+            "sku": "ESP-PRO-1",
+            "unit_price_minor": 42000
+          }
+        ],
+        "order_id": "ORD-48106",
+        "payment": {
+          "captured_minor": 42000,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 42000
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": "Warehouse received parcel",
+        "status": "received",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "The listing said the machine includes a milk frother, but the box had none. The warehouse has the machine back, so please refund the order.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-48106",
+          "reason_code": "not_as_described",
+          "requested_minor": 42000,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-90106"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-90106",
+  "title": "Finance lowers the auto-approve limit"
+}

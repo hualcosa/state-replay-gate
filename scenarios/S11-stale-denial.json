@@ -1,0 +1,118 @@
+{
+  "expected": {
+    "arm_c": "false_stop",
+    "arm_d": "false_stop",
+    "gate": null,
+    "harm_if_paid": {
+      "amount_minor": 0,
+      "explanation": "",
+      "type": "none"
+    },
+    "t0_action": "deny_refund",
+    "t0_amount_minor": null,
+    "t1_should_pay": true,
+    "why": "At T0 the return had no carrier scan, so denying was right; at T1 the return is received and the refund is owed."
+  },
+  "hero": false,
+  "id": "S11",
+  "kind": "stale_denial",
+  "mutation": {
+    "actor": "warehouse",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "return_received",
+    "label": "Return received",
+    "narrative": "The warehouse scanned the return as received.",
+    "ops": [
+      {
+        "op": "replace",
+        "path": "/return_info/status",
+        "value": "received"
+      },
+      {
+        "op": "replace",
+        "path": "/return_info/updated_at",
+        "value": "2026-10-12T10:00:00Z"
+      },
+      {
+        "op": "replace",
+        "path": "/return_info/detail",
+        "value": "Warehouse received parcel"
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "slug": "stale-denial",
+  "story": {
+    "setup": "A customer asks for a $110.00 refund after changing their mind, but the return has only a label and no scan.",
+    "stakes": "Without a fresh read, the customer stays denied a refund they are now owed.",
+    "twist": "The warehouse scans the return as received."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-20127",
+        "email": "greta.solheim@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Greta Solheim",
+        "shipping_address": "52 Birch Terrace, Kingsford, ZZ 01111",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-20127",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Down jacket",
+            "qty": 1,
+            "sku": "JKT-DWN-S",
+            "unit_price_minor": 11000
+          }
+        ],
+        "order_id": "ORD-48111",
+        "payment": {
+          "captured_minor": 11000,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 11000
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": "Return label generated, not yet scanned",
+        "status": "label_created",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "I changed my mind about the jacket and printed the return label today. I will drop the parcel off soon, so please refund the order.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-48111",
+          "reason_code": "changed_mind",
+          "requested_minor": 11000,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-90111"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-90111",
+  "title": "A denial goes stale"
+}

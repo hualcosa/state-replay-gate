@@ -1,0 +1,105 @@
+{
+  "expected": {
+    "arm_c": "correct_payment",
+    "arm_d": "correct_payment",
+    "gate": {
+      "failed_rules": [],
+      "verdict": "allow"
+    },
+    "harm_if_paid": {
+      "amount_minor": 0,
+      "explanation": "",
+      "type": "none"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 5800,
+    "t1_should_pay": true,
+    "why": "The refund is valid at both times, so every arm should pay it."
+  },
+  "hero": false,
+  "id": "S09",
+  "kind": "control",
+  "mutation": {
+    "actor": "nobody",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "none",
+    "label": "No change",
+    "narrative": "No state changed between the eval and the action.",
+    "ops": []
+  },
+  "schema_version": "1.0",
+  "slug": "control-no-change",
+  "story": {
+    "setup": "A customer asks for a $58.00 refund because a carafe arrived cracked.",
+    "stakes": "The refund should go through without any friction.",
+    "twist": "Nothing changes between the eval and the refund."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-20125",
+        "email": "hana.lindqvist@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Hana Lindqvist",
+        "shipping_address": "88 Mill Row, Stonebridge, ZZ 00909",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-20125",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Glass water carafe",
+            "qty": 1,
+            "sku": "CRF-GL-1L",
+            "unit_price_minor": 5800
+          }
+        ],
+        "order_id": "ORD-48109",
+        "payment": {
+          "captured_minor": 5800,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 5800
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": null,
+        "status": "not_required",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "The carafe was cracked at the base when I opened the box. Please refund the order.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-48109",
+          "reason_code": "damaged",
+          "requested_minor": 5800,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-90109"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-90109",
+  "title": "Control: nothing changes"
+}

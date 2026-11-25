@@ -1,0 +1,105 @@
+{
+  "expected": {
+    "arm_c": "correct_payment",
+    "arm_d": "correct_payment",
+    "gate": {
+      "failed_rules": [],
+      "verdict": "allow"
+    },
+    "harm_if_paid": {
+      "amount_minor": 0,
+      "explanation": "",
+      "type": "none"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 4000,
+    "t1_should_pay": true,
+    "why": "The refund is valid at both times, so every arm should pay it."
+  },
+  "hero": false,
+  "id": "F03",
+  "kind": "control",
+  "mutation": {
+    "actor": "nobody",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "none",
+    "label": "No change",
+    "narrative": "No state changed between the eval and the action.",
+    "ops": []
+  },
+  "schema_version": "1.0",
+  "slug": "fixture-control-no-change",
+  "story": {
+    "setup": "A customer asks for a $40.00 refund for a damaged item.",
+    "stakes": "The refund should go through without friction.",
+    "twist": "Nothing changes between the eval and the refund."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-F30",
+        "email": "fixture3@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Fixture Customer 3",
+        "shipping_address": "3 Fixture Lane, Testville, ZZ 00000",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-F30",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Fixture item 3",
+            "qty": 1,
+            "sku": "SKU-F3-1",
+            "unit_price_minor": 4000
+          }
+        ],
+        "order_id": "ORD-F30",
+        "payment": {
+          "captured_minor": 4000,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 4000
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": null,
+        "status": "not_required",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "Fixture ticket 3: please refund my order.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-F30",
+          "reason_code": "damaged",
+          "requested_minor": 4000,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-F31"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-F31",
+  "title": "Fixture: nothing changes"
+}

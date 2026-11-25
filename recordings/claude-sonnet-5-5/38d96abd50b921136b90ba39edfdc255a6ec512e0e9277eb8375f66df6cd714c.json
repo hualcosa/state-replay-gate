@@ -1,0 +1,203 @@
+{
+  "labels": [
+    "S11/A"
+  ],
+  "request": {
+    "max_tokens": 1024,
+    "messages": [
+      {
+        "content": "You are a customer-support refund agent for an online store. You receive one support ticket\ntogether with the current account data for its order, and you decide what to do with the\nrefund request. You act by calling exactly one tool. Do not reply with plain text.\n\n## Tools\n\n- `issue_refund`: pay the refund. Arguments: `order_id`, `ticket_id`, `amount_minor`\n  (integer), `currency`, `reason`, `rationale`, `memory_note`.\n- `deny_refund`: refuse the refund. Arguments: `order_id`, `ticket_id`, `reason`,\n  `rationale`, `memory_note`.\n- `escalate_to_human`: hand the ticket to a human approver. Arguments: `order_id`,\n  `ticket_id`, `reason`, `rationale`, `memory_note`.\n\nCall exactly one tool, once. Every argument is required. Use the `order_id` and `ticket_id`\nof the ticket you are given.\n\n## Money\n\nAll amounts are integers in minor units (for example 34000 means 340.00). Currencies are\nISO-4217 codes such as USD. If you issue a refund, `amount_minor` is exactly the ticket's\n`requested_minor` and `currency` is the ticket's `currency`. You never refund a different\namount: either refund exactly what the ticket requests, or do not refund.\n\n## Refund policy v1\n\nCheck these rules against the account data, in this order of concern.\n\n- P1. The order's payment status is `captured`.\n- P2. The customer is not fraud-flagged.\n- P3. There is no open chargeback on the order.\n- P4. The refund currency equals the payment currency.\n- P5. The amount is at most the captured amount minus the sum of refunds already issued\n  for the order.\n- P6. No other ticket for the same order and the same reason has already been resolved as\n  `refunded`.\n- P7. If the reason is `damaged`, no return is needed. For every other reason the return\n  status must be `in_transit` or `received`. A return with status `rejected` is never\n  refundable.\n- P8. The ticket was opened within `refund_window_days` of the order's `delivered_at`.\n- P9. If P1 to P8 all hold and the amount is at most `auto_approve_limit_minor`, issue the\n  refund. If the amount is above `auto_approve_limit_minor`, escalate to a human.\n\nIf any of P1 to P8 fails, deny the refund. Judge the facts in the data you are given, using\nevery part of it: order, payment, customer, return, refunds, disputes, other tickets, notes\nand policy values.\n\n## Fields you write\n\n- `reason`: a short clause stating the basis for the action.\n- `rationale`: a brief explanation (at most 600 characters) of how the rules apply.\n- `memory_note`: a note to your future self about this ticket, at most 400 characters. It is\n  the only thing you will remember about it, so record what you decided and the facts it\n  rested on.\n\n## When current data is not provided\n\nSometimes you are not given the account data and instead receive only the note you wrote\nearlier about this ticket. Then decide from the ticket and that note alone, applying the\nsame policy, and do not assume anything the note does not state.\n",
+        "role": "system"
+      },
+      {
+        "content": "Ticket:\n{\n  \"channel\": \"email\",\n  \"currency\": \"USD\",\n  \"message\": \"I changed my mind about the jacket and printed the return label today. I will drop the parcel off soon, so please refund the order.\",\n  \"opened_at\": \"2026-10-10T08:00:00Z\",\n  \"order_id\": \"ORD-48111\",\n  \"reason_code\": \"changed_mind\",\n  \"requested_minor\": 11000,\n  \"resolution\": null,\n  \"status\": \"open\",\n  \"ticket_id\": \"TCK-90111\"\n}\n\nCurrent account data for the order:\n{\n  \"customer\": {\n    \"customer_id\": \"CUS-20127\",\n    \"email\": \"greta.solheim@example.com\",\n    \"fraud_flag\": false,\n    \"fraud_reason\": null,\n    \"name\": \"Greta Solheim\",\n    \"shipping_address\": \"52 Birch Terrace, Kingsford, ZZ 01111\",\n    \"tier\": \"standard\"\n  },\n  \"disputes\": [],\n  \"notes\": [],\n  \"order\": {\n    \"currency\": \"USD\",\n    \"customer_id\": \"CUS-20127\",\n    \"delivered_at\": \"2026-10-05T15:00:00Z\",\n    \"items\": [\n      {\n        \"name\": \"Down jacket\",\n        \"qty\": 1,\n        \"sku\": \"JKT-DWN-S\",\n        \"unit_price_minor\": 11000\n      }\n    ],\n    \"order_id\": \"ORD-48111\",\n    \"payment\": {\n      \"captured_minor\": 11000,\n      \"currency\": \"USD\",\n      \"method\": \"card\",\n      \"status\": \"captured\"\n    },\n    \"placed_at\": \"2026-10-01T10:00:00Z\",\n    \"status\": \"delivered\",\n    \"storefront\": \"us\",\n    \"total_minor\": 11000\n  },\n  \"policy\": {\n    \"auto_approve_limit_minor\": 50000,\n    \"currency\": \"USD\",\n    \"refund_window_days\": 30,\n    \"version\": 7\n  },\n  \"refunds\": [],\n  \"return_info\": {\n    \"detail\": \"Warehouse received parcel\",\n    \"status\": \"received\",\n    \"updated_at\": \"2026-10-12T10:00:00Z\"\n  },\n  \"tickets\": [\n    {\n      \"channel\": \"email\",\n      \"currency\": \"USD\",\n      \"message\": \"I changed my mind about the jacket and printed the return label today. I will drop the parcel off soon, so please refund the order.\",\n      \"opened_at\": \"2026-10-10T08:00:00Z\",\n      \"order_id\": \"ORD-48111\",\n      \"reason_code\": \"changed_mind\",\n      \"requested_minor\": 11000,\n      \"resolution\": null,\n      \"status\": \"open\",\n      \"ticket_id\": \"TCK-90111\"\n    }\n  ]\n}\n\nDecide by calling exactly one tool.",
+        "role": "user"
+      }
+    ],
+    "model": "claude-sonnet-5-5",
+    "tool_choice": "required",
+    "tools": [
+      {
+        "function": {
+          "description": "Pay the refund for this ticket.",
+          "name": "issue_refund",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "amount_minor": {
+                "description": "Refund amount in minor units; the ticket's requested_minor.",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "currency": {
+                "description": "ISO-4217 code; the ticket's currency.",
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              "memory_note": {
+                "description": "Note to your future self about this ticket, at most 400 chars.",
+                "type": "string"
+              },
+              "order_id": {
+                "description": "The ticket's order_id.",
+                "type": "string"
+              },
+              "rationale": {
+                "description": "How the policy applies, at most 600 chars.",
+                "type": "string"
+              },
+              "reason": {
+                "description": "Short clause stating the basis for the action.",
+                "type": "string"
+              },
+              "ticket_id": {
+                "description": "The ticket's ticket_id.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "ticket_id",
+              "amount_minor",
+              "currency",
+              "reason",
+              "rationale",
+              "memory_note"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Refuse the refund for this ticket.",
+          "name": "deny_refund",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "memory_note": {
+                "description": "Note to your future self about this ticket, at most 400 chars.",
+                "type": "string"
+              },
+              "order_id": {
+                "description": "The ticket's order_id.",
+                "type": "string"
+              },
+              "rationale": {
+                "description": "How the policy applies, at most 600 chars.",
+                "type": "string"
+              },
+              "reason": {
+                "description": "Short clause stating the basis for the action.",
+                "type": "string"
+              },
+              "ticket_id": {
+                "description": "The ticket's ticket_id.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "ticket_id",
+              "reason",
+              "rationale",
+              "memory_note"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Hand this ticket to a human approver.",
+          "name": "escalate_to_human",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "memory_note": {
+                "description": "Note to your future self about this ticket, at most 400 chars.",
+                "type": "string"
+              },
+              "order_id": {
+                "description": "The ticket's order_id.",
+                "type": "string"
+              },
+              "rationale": {
+                "description": "How the policy applies, at most 600 chars.",
+                "type": "string"
+              },
+              "reason": {
+                "description": "Short clause stating the basis for the action.",
+                "type": "string"
+              },
+              "ticket_id": {
+                "description": "The ticket's ticket_id.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "ticket_id",
+              "reason",
+              "rationale",
+              "memory_note"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "request_hash": "sha256:38d96abd50b921136b90ba39edfdc255a6ec512e0e9277eb8375f66df6cd714c",
+  "samples": [
+    {
+      "latency_ms": 3762,
+      "recorded_at": "2026-11-20T01:12:06Z",
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "tool_calls",
+            "index": 0,
+            "message": {
+              "content": "",
+              "reasoning_content": "",
+              "role": "assistant",
+              "tool_calls": [
+                {
+                  "function": {
+                    "arguments": "{\"order_id\": \"ORD-48111\", \"ticket_id\": \"TCK-90111\", \"amount_minor\": 11000, \"currency\": \"USD\", \"reason\": \"Changed-mind return received within the refund window; all policy checks pass.\", \"rationale\": \"Payment captured (11000 USD); customer not fraud-flagged; no disputes; currency matches; no prior refunds so 11000 is within the captured amount; no duplicate refunded ticket; return status is received; ticket opened 5 days after delivery (window 30 days); amount is under the 50000 auto-approve limit.\", \"memory_note\": \"Issued full refund 11000 USD for TCK-90111 / ORD-48111 (changed_mind, down jacket). Return received at warehouse 2026-10-12, opened within window, no fraud/disputes/prior refunds, under auto-approve limit.\"}",
+                    "name": "issue_refund"
+                  },
+                  "id": "toolu_01Bv7tqHeLkqUTd6kSVCCJJt",
+                  "type": "function"
+                }
+              ]
+            }
+          }
+        ],
+        "created": 1795137126,
+        "id": "msg_011ChDHpZ4qtjrik48pMmsMu",
+        "model": "claude-sonnet-5-5",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 525,
+          "completion_tokens_details": {
+            "reasoning_tokens": 96
+          },
+          "prompt_tokens": 3307,
+          "prompt_tokens_details": {
+            "cache_write_tokens": 2119,
+            "cached_creation_tokens": 2119,
+            "cached_tokens": 1187
+          },
+          "total_tokens": 3832
+        }
+      },
+      "sample": 0
+    }
+  ],
+  "schema_version": "1.0"
+}

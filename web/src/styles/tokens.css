@@ -1,0 +1,46 @@
+:root {
+  color-scheme: dark;
+
+  /* Ink: the page is a flight-recorder screen. */
+  --ink-0: #07090c;
+  --ink-1: #0d1117;
+  --ink-2: #141a22;
+  --ink-3: #1c2430;
+  --line: #29323f;
+  --line-strong: #3b485a;
+
+  /* Text, all >= 4.5:1 on ink-1 and ink-2. */
+  --text: #ece8de;
+  --text-2: #b0b9c4;
+  --text-3: #8f9aa8;
+
+  /* Time and verdict colours. Meaning is never carried by colour alone (icons and words always accompany). */
+  --t0: #7cc4ff; /* frozen snapshot, eval time */
+  --t1: #ff8a3d; /* the world moved */
+  --bad: #ff5a55; /* money out wrongly */
+  --good: #3ee0a0; /* correct, gate allows or blocks rightly */
+  --warn: #f5d547; /* review, false stop */
+
+  --t0-wash: color-mix(in srgb, var(--t0) 12%, transparent);
+  --t1-wash: color-mix(in srgb, var(--t1) 14%, transparent);
+  --bad-wash: color-mix(in srgb, var(--bad) 14%, transparent);
+  --good-wash: color-mix(in srgb, var(--good) 12%, transparent);
+  --warn-wash: color-mix(in srgb, var(--warn) 13%, transparent);
+
+  --font-display: "Fraunces Variable", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-body: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* 4/8 spacing rhythm */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 72px; --s9: 112px;
+  --r-sm: 6px; --r: 12px; --r-lg: 20px;
+  --w: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+
+  /* Motion tokens: one language. Arrivals decelerate, exits are quicker. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-quick: 160ms;
+  --dur-base: 320ms;
+  --dur-slow: 700ms;
+}

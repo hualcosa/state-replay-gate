@@ -1,0 +1,140 @@
+{
+  "expected": {
+    "arm_c": "correct_payment",
+    "arm_d": "correct_payment",
+    "gate": {
+      "failed_rules": [],
+      "verdict": "allow"
+    },
+    "harm_if_paid": {
+      "amount_minor": 0,
+      "explanation": "",
+      "type": "none"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 14500,
+    "t1_should_pay": true,
+    "why": "The refund is valid at both times and the T1 changes are unrelated, so every arm should pay it."
+  },
+  "hero": false,
+  "id": "S10",
+  "kind": "control",
+  "mutation": {
+    "actor": "customer, CRM, finance",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "benign_change",
+    "label": "Unrelated account changes",
+    "narrative": "The customer updated their contact details, the CRM upgraded their tier, a note about another order was added, and finance raised the auto-approve limit to $750.00.",
+    "ops": [
+      {
+        "op": "replace",
+        "path": "/customer/email",
+        "value": "rafael.q@example.com"
+      },
+      {
+        "op": "replace",
+        "path": "/customer/shipping_address",
+        "value": "4 Juniper Terrace, Oakmont, ZZ 01011"
+      },
+      {
+        "op": "replace",
+        "path": "/customer/tier",
+        "value": "gold"
+      },
+      {
+        "op": "add",
+        "path": "/notes/-",
+        "value": {
+          "at": "2026-10-11T12:00:00Z",
+          "author": "support agent",
+          "text": "Customer asked about delivery timing for a separate order, ORD-48117."
+        }
+      },
+      {
+        "op": "replace",
+        "path": "/policy/auto_approve_limit_minor",
+        "value": 75000
+      },
+      {
+        "op": "replace",
+        "path": "/policy/version",
+        "value": 8
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "slug": "control-benign-change",
+  "story": {
+    "setup": "A customer asks for a $145.00 refund because a blanket is not the wool the listing promised, and the return is back.",
+    "stakes": "None of these changes affects the refund, so it should still go through.",
+    "twist": "The customer updates their contact details and tier, a note is added about another order, and finance raises the auto-approve limit."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-20126",
+        "email": "rafael.quintero@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Rafael Quintero",
+        "shipping_address": "19 Larkspur Drive, Oakmont, ZZ 01010",
+        "tier": "silver"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-20126",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Wool throw blanket",
+            "qty": 1,
+            "sku": "BLK-WOL-GY",
+            "unit_price_minor": 14500
+          }
+        ],
+        "order_id": "ORD-48110",
+        "payment": {
+          "captured_minor": 14500,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 14500
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": "Warehouse received parcel",
+        "status": "received",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "The blanket is acrylic, not wool as the listing says. The warehouse has confirmed they received it, so please refund the order.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-48110",
+          "reason_code": "not_as_described",
+          "requested_minor": 14500,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-90110"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-90110",
+  "title": "Control: unrelated changes only"
+}

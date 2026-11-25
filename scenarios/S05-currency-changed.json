@@ -1,0 +1,123 @@
+{
+  "expected": {
+    "arm_c": "wrong_payment",
+    "arm_d": "correct_stop",
+    "gate": {
+      "failed_rules": [
+        "currency_matches_order"
+      ],
+      "verdict": "block"
+    },
+    "harm_if_paid": {
+      "amount_minor": 12900,
+      "explanation": "USD 129.00 would be sent against a CAD 129.00 payment.",
+      "type": "wrong_currency_payout"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 12900,
+    "t1_should_pay": false,
+    "why": "The refund must match the payment currency, and the payment is now in CAD."
+  },
+  "hero": false,
+  "id": "S05",
+  "kind": "mutation",
+  "mutation": {
+    "actor": "billing ops",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "currency_changed",
+    "label": "Payment re-billed in CAD",
+    "narrative": "Billing operations re-billed the order on the Canadian storefront, so the payment is now CAD 129.00.",
+    "ops": [
+      {
+        "op": "replace",
+        "path": "/order/currency",
+        "value": "CAD"
+      },
+      {
+        "op": "replace",
+        "path": "/order/payment/currency",
+        "value": "CAD"
+      },
+      {
+        "op": "replace",
+        "path": "/order/storefront",
+        "value": "ca"
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "slug": "currency-changed",
+  "story": {
+    "setup": "A customer asks for a $129.00 refund because the wrong jacket size arrived, and the warehouse has the return.",
+    "stakes": "Sending USD 129.00 against a CAD payment would pay out in the wrong currency.",
+    "twist": "Billing operations re-bill the order on the Canadian storefront, so the payment is now CAD 129.00."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-20121",
+        "email": "chloe.armand@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Chloe Armand",
+        "shipping_address": "31 Willow Bend, Northgate, ZZ 00531",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-20121",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Rain jacket, size M",
+            "qty": 1,
+            "sku": "JKT-RN-M",
+            "unit_price_minor": 12900
+          }
+        ],
+        "order_id": "ORD-48105",
+        "payment": {
+          "captured_minor": 12900,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 12900
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": "Warehouse received parcel",
+        "status": "received",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "I ordered the jacket in size M but a size L arrived. The warehouse has the parcel back now, so please refund the order.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-48105",
+          "reason_code": "wrong_item",
+          "requested_minor": 12900,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-90105"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-90105",
+  "title": "The order is re-billed in Canadian dollars"
+}

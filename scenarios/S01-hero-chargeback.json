@@ -1,0 +1,121 @@
+{
+  "expected": {
+    "arm_c": "wrong_payment",
+    "arm_d": "correct_stop",
+    "gate": {
+      "failed_rules": [
+        "no_open_chargeback"
+      ],
+      "verdict": "block"
+    },
+    "harm_if_paid": {
+      "amount_minor": 34000,
+      "explanation": "The chargeback already returns $340.00 to the customer.",
+      "type": "double_payment"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 34000,
+    "t1_should_pay": false,
+    "why": "An open chargeback on the order means the dispute already returns the money, so a refund pays the customer twice."
+  },
+  "hero": true,
+  "id": "S01",
+  "kind": "mutation",
+  "mutation": {
+    "actor": "payment processor",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "chargeback_opened",
+    "label": "Chargeback opened",
+    "narrative": "The payment processor opened a $340.00 chargeback on the order.",
+    "ops": [
+      {
+        "op": "add",
+        "path": "/disputes/-",
+        "value": {
+          "amount_minor": 34000,
+          "currency": "USD",
+          "dispute_id": "DSP-7781",
+          "opened_at": "2026-10-12T13:00:00Z",
+          "order_id": "ORD-48101",
+          "status": "open",
+          "type": "chargeback"
+        }
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "slug": "hero-chargeback",
+  "story": {
+    "setup": "A customer asks for a $340.00 refund on a desk that looks different from the listing, and the return is already in transit.",
+    "stakes": "Paying the refund now would return the same $340.00 twice.",
+    "twist": "Before the refund runs, the payment processor opens a $340.00 chargeback on the same order."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-20117",
+        "email": "marta.okonkwo@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Marta Okonkwo",
+        "shipping_address": "48 Alder Court, Fairview, ZZ 00148",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-20117",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Walnut standing desk",
+            "qty": 1,
+            "sku": "DESK-WAL-140",
+            "unit_price_minor": 34000
+          }
+        ],
+        "order_id": "ORD-48101",
+        "payment": {
+          "captured_minor": 34000,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 34000
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": "Carrier scan: picked up from customer",
+        "status": "in_transit",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "The desk top is a much lighter colour than the photos on your site. I have booked the return, so please refund the order.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-48101",
+          "reason_code": "not_as_described",
+          "requested_minor": 34000,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-90101"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-90101",
+  "title": "Chargeback opens after the eval passed"
+}

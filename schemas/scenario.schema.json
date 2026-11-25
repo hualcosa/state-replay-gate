@@ -1,0 +1,878 @@
+{
+  "$defs": {
+    "Customer": {
+      "additionalProperties": false,
+      "properties": {
+        "customer_id": {
+          "title": "Customer Id",
+          "type": "string"
+        },
+        "email": {
+          "title": "Email",
+          "type": "string"
+        },
+        "fraud_flag": {
+          "title": "Fraud Flag",
+          "type": "boolean"
+        },
+        "fraud_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Fraud Reason"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "shipping_address": {
+          "title": "Shipping Address",
+          "type": "string"
+        },
+        "tier": {
+          "enum": [
+            "standard",
+            "silver",
+            "gold"
+          ],
+          "title": "Tier",
+          "type": "string"
+        }
+      },
+      "required": [
+        "customer_id",
+        "name",
+        "email",
+        "tier",
+        "shipping_address",
+        "fraud_flag",
+        "fraud_reason"
+      ],
+      "title": "Customer",
+      "type": "object"
+    },
+    "Dispute": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "dispute_id": {
+          "title": "Dispute Id",
+          "type": "string"
+        },
+        "opened_at": {
+          "title": "Opened At",
+          "type": "string"
+        },
+        "order_id": {
+          "title": "Order Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "won",
+            "lost"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "type": {
+          "const": "chargeback",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dispute_id",
+        "order_id",
+        "type",
+        "status",
+        "amount_minor",
+        "currency",
+        "opened_at"
+      ],
+      "title": "Dispute",
+      "type": "object"
+    },
+    "Expected": {
+      "additionalProperties": false,
+      "properties": {
+        "arm_c": {
+          "enum": [
+            "correct_payment",
+            "wrong_payment",
+            "correct_stop",
+            "false_stop"
+          ],
+          "title": "Arm C",
+          "type": "string"
+        },
+        "arm_d": {
+          "enum": [
+            "correct_payment",
+            "wrong_payment",
+            "correct_stop",
+            "false_stop"
+          ],
+          "title": "Arm D",
+          "type": "string"
+        },
+        "gate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExpectedGate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "harm_if_paid": {
+          "$ref": "#/$defs/Harm"
+        },
+        "t0_action": {
+          "enum": [
+            "issue_refund",
+            "deny_refund",
+            "escalate_to_human"
+          ],
+          "title": "T0 Action",
+          "type": "string"
+        },
+        "t0_amount_minor": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "T0 Amount Minor"
+        },
+        "t1_should_pay": {
+          "title": "T1 Should Pay",
+          "type": "boolean"
+        },
+        "why": {
+          "title": "Why",
+          "type": "string"
+        }
+      },
+      "required": [
+        "t0_action",
+        "t0_amount_minor",
+        "t1_should_pay",
+        "harm_if_paid",
+        "gate",
+        "arm_c",
+        "arm_d",
+        "why"
+      ],
+      "title": "Expected",
+      "type": "object"
+    },
+    "ExpectedGate": {
+      "additionalProperties": false,
+      "properties": {
+        "failed_rules": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Failed Rules",
+          "type": "array"
+        },
+        "verdict": {
+          "enum": [
+            "allow",
+            "block",
+            "review"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "verdict",
+        "failed_rules"
+      ],
+      "title": "ExpectedGate",
+      "type": "object"
+    },
+    "Harm": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "none",
+            "double_payment",
+            "overpayment",
+            "fraud_payout",
+            "wrong_currency_payout",
+            "unapproved_payout",
+            "unpaid_order_refund",
+            "ineligible_refund"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "amount_minor",
+        "explanation"
+      ],
+      "title": "Harm",
+      "type": "object"
+    },
+    "Mutation": {
+      "additionalProperties": false,
+      "properties": {
+        "actor": {
+          "title": "Actor",
+          "type": "string"
+        },
+        "at": {
+          "title": "At",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "chargeback_opened",
+            "partial_refund_issued",
+            "fraud_flag_set",
+            "duplicate_refund_issued",
+            "currency_changed",
+            "auto_approve_limit_lowered",
+            "payment_reversed",
+            "return_rejected",
+            "return_received",
+            "off_ledger_refund",
+            "benign_change",
+            "none"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "narrative": {
+          "title": "Narrative",
+          "type": "string"
+        },
+        "ops": {
+          "items": {
+            "$ref": "#/$defs/PatchOp"
+          },
+          "title": "Ops",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "label",
+        "actor",
+        "narrative",
+        "at",
+        "ops"
+      ],
+      "title": "Mutation",
+      "type": "object"
+    },
+    "Note": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "string"
+        },
+        "author": {
+          "title": "Author",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "at",
+        "author",
+        "text"
+      ],
+      "title": "Note",
+      "type": "object"
+    },
+    "Order": {
+      "additionalProperties": false,
+      "properties": {
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "customer_id": {
+          "title": "Customer Id",
+          "type": "string"
+        },
+        "delivered_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Delivered At"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/OrderItem"
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "order_id": {
+          "title": "Order Id",
+          "type": "string"
+        },
+        "payment": {
+          "$ref": "#/$defs/Payment"
+        },
+        "placed_at": {
+          "title": "Placed At",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "delivered",
+            "in_transit",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "storefront": {
+          "title": "Storefront",
+          "type": "string"
+        },
+        "total_minor": {
+          "title": "Total Minor",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "order_id",
+        "customer_id",
+        "storefront",
+        "placed_at",
+        "delivered_at",
+        "status",
+        "currency",
+        "total_minor",
+        "items",
+        "payment"
+      ],
+      "title": "Order",
+      "type": "object"
+    },
+    "OrderItem": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "qty": {
+          "title": "Qty",
+          "type": "integer"
+        },
+        "sku": {
+          "title": "Sku",
+          "type": "string"
+        },
+        "unit_price_minor": {
+          "title": "Unit Price Minor",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sku",
+        "name",
+        "qty",
+        "unit_price_minor"
+      ],
+      "title": "OrderItem",
+      "type": "object"
+    },
+    "PatchOp": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "enum": [
+            "add",
+            "replace",
+            "remove"
+          ],
+          "title": "Op",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "value": {
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "op",
+        "path"
+      ],
+      "title": "PatchOp",
+      "type": "object"
+    },
+    "Payment": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_minor": {
+          "title": "Captured Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "method": {
+          "enum": [
+            "card",
+            "bank_debit",
+            "wallet"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "captured",
+            "reversed",
+            "voided"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "method",
+        "captured_minor",
+        "currency"
+      ],
+      "title": "Payment",
+      "type": "object"
+    },
+    "Policy": {
+      "additionalProperties": false,
+      "properties": {
+        "auto_approve_limit_minor": {
+          "title": "Auto Approve Limit Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "refund_window_days": {
+          "title": "Refund Window Days",
+          "type": "integer"
+        },
+        "version": {
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "version",
+        "auto_approve_limit_minor",
+        "currency",
+        "refund_window_days"
+      ],
+      "title": "Policy",
+      "type": "object"
+    },
+    "Refund": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "issued_at": {
+          "title": "Issued At",
+          "type": "string"
+        },
+        "issued_by": {
+          "title": "Issued By",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Note"
+        },
+        "order_id": {
+          "title": "Order Id",
+          "type": "string"
+        },
+        "refund_id": {
+          "title": "Refund Id",
+          "type": "string"
+        },
+        "ticket_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ticket Id"
+        }
+      },
+      "required": [
+        "refund_id",
+        "order_id",
+        "ticket_id",
+        "amount_minor",
+        "currency",
+        "issued_at",
+        "issued_by",
+        "note"
+      ],
+      "title": "Refund",
+      "type": "object"
+    },
+    "ReturnInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Detail"
+        },
+        "status": {
+          "enum": [
+            "not_required",
+            "label_created",
+            "in_transit",
+            "received",
+            "rejected"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "updated_at": {
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "updated_at",
+        "detail"
+      ],
+      "title": "ReturnInfo",
+      "type": "object"
+    },
+    "Snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/WorldState"
+        }
+      },
+      "required": [
+        "at",
+        "state"
+      ],
+      "title": "Snapshot",
+      "type": "object"
+    },
+    "Story": {
+      "additionalProperties": false,
+      "properties": {
+        "setup": {
+          "title": "Setup",
+          "type": "string"
+        },
+        "stakes": {
+          "title": "Stakes",
+          "type": "string"
+        },
+        "twist": {
+          "title": "Twist",
+          "type": "string"
+        }
+      },
+      "required": [
+        "setup",
+        "twist",
+        "stakes"
+      ],
+      "title": "Story",
+      "type": "object"
+    },
+    "Ticket": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "enum": [
+            "email",
+            "chat",
+            "phone"
+          ],
+          "title": "Channel",
+          "type": "string"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "opened_at": {
+          "title": "Opened At",
+          "type": "string"
+        },
+        "order_id": {
+          "title": "Order Id",
+          "type": "string"
+        },
+        "reason_code": {
+          "enum": [
+            "damaged",
+            "not_as_described",
+            "wrong_item",
+            "changed_mind"
+          ],
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "requested_minor": {
+          "title": "Requested Minor",
+          "type": "integer"
+        },
+        "resolution": {
+          "anyOf": [
+            {
+              "enum": [
+                "refunded",
+                "denied"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Resolution"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "ticket_id": {
+          "title": "Ticket Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ticket_id",
+        "order_id",
+        "channel",
+        "reason_code",
+        "message",
+        "requested_minor",
+        "currency",
+        "opened_at",
+        "status",
+        "resolution"
+      ],
+      "title": "Ticket",
+      "type": "object"
+    },
+    "WorldState": {
+      "additionalProperties": false,
+      "properties": {
+        "customer": {
+          "$ref": "#/$defs/Customer"
+        },
+        "disputes": {
+          "items": {
+            "$ref": "#/$defs/Dispute"
+          },
+          "title": "Disputes",
+          "type": "array"
+        },
+        "notes": {
+          "items": {
+            "$ref": "#/$defs/Note"
+          },
+          "title": "Notes",
+          "type": "array"
+        },
+        "order": {
+          "$ref": "#/$defs/Order"
+        },
+        "policy": {
+          "$ref": "#/$defs/Policy"
+        },
+        "refunds": {
+          "items": {
+            "$ref": "#/$defs/Refund"
+          },
+          "title": "Refunds",
+          "type": "array"
+        },
+        "return_info": {
+          "$ref": "#/$defs/ReturnInfo"
+        },
+        "tickets": {
+          "items": {
+            "$ref": "#/$defs/Ticket"
+          },
+          "title": "Tickets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "order",
+        "customer",
+        "return_info",
+        "refunds",
+        "disputes",
+        "tickets",
+        "notes",
+        "policy"
+      ],
+      "title": "WorldState",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "expected": {
+      "$ref": "#/$defs/Expected"
+    },
+    "hero": {
+      "title": "Hero",
+      "type": "boolean"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "mutation",
+        "control",
+        "stale_denial",
+        "gate_blind_spot"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "mutation": {
+      "$ref": "#/$defs/Mutation"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "slug": {
+      "title": "Slug",
+      "type": "string"
+    },
+    "story": {
+      "$ref": "#/$defs/Story"
+    },
+    "t0": {
+      "$ref": "#/$defs/Snapshot"
+    },
+    "ticket_id": {
+      "title": "Ticket Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "slug",
+    "title",
+    "kind",
+    "hero",
+    "story",
+    "ticket_id",
+    "t0",
+    "mutation",
+    "expected"
+  ],
+  "title": "Scenario",
+  "type": "object"
+}

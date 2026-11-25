@@ -1,0 +1,1761 @@
+{
+  "$defs": {
+    "AgentDecision": {
+      "additionalProperties": false,
+      "else": {
+        "properties": {
+          "amount_minor": {
+            "type": "null"
+          },
+          "currency": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "action": {
+            "const": "issue_refund"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "properties": {
+        "action": {
+          "enum": [
+            "issue_refund",
+            "deny_refund",
+            "escalate_to_human"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "amount_minor": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Amount Minor"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Currency"
+        },
+        "memory_note": {
+          "title": "Memory Note",
+          "type": "string"
+        },
+        "order_id": {
+          "title": "Order Id",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "ticket_id": {
+          "title": "Ticket Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "order_id",
+        "ticket_id",
+        "amount_minor",
+        "currency",
+        "reason",
+        "rationale",
+        "memory_note"
+      ],
+      "then": {
+        "properties": {
+          "amount_minor": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "type": "string"
+          }
+        }
+      },
+      "title": "AgentDecision",
+      "type": "object"
+    },
+    "ArmRun": {
+      "additionalProperties": false,
+      "properties": {
+        "arm": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "title": "Arm",
+          "type": "string"
+        },
+        "decision": {
+          "$ref": "#/$defs/AgentDecision"
+        },
+        "decision_changed_vs_t0": {
+          "title": "Decision Changed Vs T0",
+          "type": "boolean"
+        },
+        "execution": {
+          "$ref": "#/$defs/Execution"
+        },
+        "gate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GateVerdict"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "llm": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LlmCallRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "memory_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Memory Note"
+        },
+        "outcome": {
+          "$ref": "#/$defs/Outcome"
+        },
+        "t1_context": {
+          "enum": [
+            "live_state",
+            "memory_note",
+            "frozen_state"
+          ],
+          "title": "T1 Context",
+          "type": "string"
+        }
+      },
+      "required": [
+        "arm",
+        "t1_context",
+        "memory_note",
+        "llm",
+        "decision",
+        "decision_changed_vs_t0",
+        "gate",
+        "execution",
+        "outcome"
+      ],
+      "title": "ArmRun",
+      "type": "object"
+    },
+    "ArmSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "has_gate": {
+          "title": "Has Gate",
+          "type": "boolean"
+        },
+        "id": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "title": "Id",
+          "type": "string"
+        },
+        "llm_call_at_t1": {
+          "title": "Llm Call At T1",
+          "type": "boolean"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "t1_context": {
+          "enum": [
+            "live_state",
+            "memory_note",
+            "frozen_state"
+          ],
+          "title": "T1 Context",
+          "type": "string"
+        },
+        "tagline": {
+          "title": "Tagline",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "tagline",
+        "t1_context",
+        "llm_call_at_t1",
+        "has_gate"
+      ],
+      "title": "ArmSpec",
+      "type": "object"
+    },
+    "ArmSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "completion_tokens_at_t1": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Completion Tokens At T1"
+        },
+        "correct_payments": {
+          "title": "Correct Payments",
+          "type": "integer"
+        },
+        "correct_stops": {
+          "title": "Correct Stops",
+          "type": "integer"
+        },
+        "decisions_changed_vs_t0": {
+          "title": "Decisions Changed Vs T0",
+          "type": "integer"
+        },
+        "false_stops": {
+          "title": "False Stops",
+          "type": "integer"
+        },
+        "llm_calls_at_t1": {
+          "title": "Llm Calls At T1",
+          "type": "integer"
+        },
+        "llm_latency_ms_p50": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Llm Latency Ms P50"
+        },
+        "llm_latency_ms_p95": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Llm Latency Ms P95"
+        },
+        "prompt_tokens_at_t1": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Prompt Tokens At T1"
+        },
+        "review_load": {
+          "title": "Review Load",
+          "type": "integer"
+        },
+        "scenarios": {
+          "title": "Scenarios",
+          "type": "integer"
+        },
+        "wrong_payment_minor": {
+          "title": "Wrong Payment Minor",
+          "type": "integer"
+        },
+        "wrong_payments": {
+          "title": "Wrong Payments",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "scenarios",
+        "correct_payments",
+        "wrong_payments",
+        "wrong_payment_minor",
+        "correct_stops",
+        "false_stops",
+        "review_load",
+        "decisions_changed_vs_t0",
+        "llm_calls_at_t1",
+        "prompt_tokens_at_t1",
+        "completion_tokens_at_t1",
+        "llm_latency_ms_p50",
+        "llm_latency_ms_p95"
+      ],
+      "title": "ArmSummary",
+      "type": "object"
+    },
+    "Customer": {
+      "additionalProperties": false,
+      "properties": {
+        "customer_id": {
+          "title": "Customer Id",
+          "type": "string"
+        },
+        "email": {
+          "title": "Email",
+          "type": "string"
+        },
+        "fraud_flag": {
+          "title": "Fraud Flag",
+          "type": "boolean"
+        },
+        "fraud_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Fraud Reason"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "shipping_address": {
+          "title": "Shipping Address",
+          "type": "string"
+        },
+        "tier": {
+          "enum": [
+            "standard",
+            "silver",
+            "gold"
+          ],
+          "title": "Tier",
+          "type": "string"
+        }
+      },
+      "required": [
+        "customer_id",
+        "name",
+        "email",
+        "tier",
+        "shipping_address",
+        "fraud_flag",
+        "fraud_reason"
+      ],
+      "title": "Customer",
+      "type": "object"
+    },
+    "Dispute": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "dispute_id": {
+          "title": "Dispute Id",
+          "type": "string"
+        },
+        "opened_at": {
+          "title": "Opened At",
+          "type": "string"
+        },
+        "order_id": {
+          "title": "Order Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "won",
+            "lost"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "type": {
+          "const": "chargeback",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dispute_id",
+        "order_id",
+        "type",
+        "status",
+        "amount_minor",
+        "currency",
+        "opened_at"
+      ],
+      "title": "Dispute",
+      "type": "object"
+    },
+    "Execution": {
+      "additionalProperties": false,
+      "properties": {
+        "executed": {
+          "title": "Executed",
+          "type": "boolean"
+        },
+        "refund": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Refund"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "total_refunded_minor": {
+          "title": "Total Refunded Minor",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "executed",
+        "refund",
+        "total_refunded_minor"
+      ],
+      "title": "Execution",
+      "type": "object"
+    },
+    "Expected": {
+      "additionalProperties": false,
+      "properties": {
+        "arm_c": {
+          "enum": [
+            "correct_payment",
+            "wrong_payment",
+            "correct_stop",
+            "false_stop"
+          ],
+          "title": "Arm C",
+          "type": "string"
+        },
+        "arm_d": {
+          "enum": [
+            "correct_payment",
+            "wrong_payment",
+            "correct_stop",
+            "false_stop"
+          ],
+          "title": "Arm D",
+          "type": "string"
+        },
+        "gate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExpectedGate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "harm_if_paid": {
+          "$ref": "#/$defs/Harm"
+        },
+        "t0_action": {
+          "enum": [
+            "issue_refund",
+            "deny_refund",
+            "escalate_to_human"
+          ],
+          "title": "T0 Action",
+          "type": "string"
+        },
+        "t0_amount_minor": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "T0 Amount Minor"
+        },
+        "t1_should_pay": {
+          "title": "T1 Should Pay",
+          "type": "boolean"
+        },
+        "why": {
+          "title": "Why",
+          "type": "string"
+        }
+      },
+      "required": [
+        "t0_action",
+        "t0_amount_minor",
+        "t1_should_pay",
+        "harm_if_paid",
+        "gate",
+        "arm_c",
+        "arm_d",
+        "why"
+      ],
+      "title": "Expected",
+      "type": "object"
+    },
+    "ExpectedGate": {
+      "additionalProperties": false,
+      "properties": {
+        "failed_rules": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Failed Rules",
+          "type": "array"
+        },
+        "verdict": {
+          "enum": [
+            "allow",
+            "block",
+            "review"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "verdict",
+        "failed_rules"
+      ],
+      "title": "ExpectedGate",
+      "type": "object"
+    },
+    "FieldChange": {
+      "additionalProperties": false,
+      "description": "One leaf-level difference; a key/index on one side only is one change with null opposite.",
+      "properties": {
+        "after": {
+          "title": "After"
+        },
+        "before": {
+          "title": "Before"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "before",
+        "after"
+      ],
+      "title": "FieldChange",
+      "type": "object"
+    },
+    "GateVerdict": {
+      "additionalProperties": false,
+      "properties": {
+        "checked_at": {
+          "title": "Checked At",
+          "type": "string"
+        },
+        "failed_rules": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Failed Rules",
+          "type": "array"
+        },
+        "latency_us": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Latency Us"
+        },
+        "results": {
+          "items": {
+            "$ref": "#/$defs/RuleResult"
+          },
+          "title": "Results",
+          "type": "array"
+        },
+        "state_digest": {
+          "title": "State Digest",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "allow",
+            "block",
+            "review"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "verdict",
+        "checked_at",
+        "state_digest",
+        "results",
+        "failed_rules",
+        "latency_us"
+      ],
+      "title": "GateVerdict",
+      "type": "object"
+    },
+    "Harm": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "none",
+            "double_payment",
+            "overpayment",
+            "fraud_payout",
+            "wrong_currency_payout",
+            "unapproved_payout",
+            "unpaid_order_refund",
+            "ineligible_refund"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "amount_minor",
+        "explanation"
+      ],
+      "title": "Harm",
+      "type": "object"
+    },
+    "LlmCallRef": {
+      "additionalProperties": false,
+      "properties": {
+        "completion_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Completion Tokens"
+        },
+        "latency_ms": {
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "prompt_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Prompt Tokens"
+        },
+        "request_hash": {
+          "title": "Request Hash",
+          "type": "string"
+        },
+        "sample": {
+          "title": "Sample",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "request_hash",
+        "sample",
+        "model",
+        "latency_ms",
+        "prompt_tokens",
+        "completion_tokens"
+      ],
+      "title": "LlmCallRef",
+      "type": "object"
+    },
+    "Mutation": {
+      "additionalProperties": false,
+      "properties": {
+        "actor": {
+          "title": "Actor",
+          "type": "string"
+        },
+        "at": {
+          "title": "At",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "chargeback_opened",
+            "partial_refund_issued",
+            "fraud_flag_set",
+            "duplicate_refund_issued",
+            "currency_changed",
+            "auto_approve_limit_lowered",
+            "payment_reversed",
+            "return_rejected",
+            "return_received",
+            "off_ledger_refund",
+            "benign_change",
+            "none"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "narrative": {
+          "title": "Narrative",
+          "type": "string"
+        },
+        "ops": {
+          "items": {
+            "$ref": "#/$defs/PatchOp"
+          },
+          "title": "Ops",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "label",
+        "actor",
+        "narrative",
+        "at",
+        "ops"
+      ],
+      "title": "Mutation",
+      "type": "object"
+    },
+    "Note": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "string"
+        },
+        "author": {
+          "title": "Author",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "at",
+        "author",
+        "text"
+      ],
+      "title": "Note",
+      "type": "object"
+    },
+    "Order": {
+      "additionalProperties": false,
+      "properties": {
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "customer_id": {
+          "title": "Customer Id",
+          "type": "string"
+        },
+        "delivered_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Delivered At"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/OrderItem"
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "order_id": {
+          "title": "Order Id",
+          "type": "string"
+        },
+        "payment": {
+          "$ref": "#/$defs/Payment"
+        },
+        "placed_at": {
+          "title": "Placed At",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "delivered",
+            "in_transit",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "storefront": {
+          "title": "Storefront",
+          "type": "string"
+        },
+        "total_minor": {
+          "title": "Total Minor",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "order_id",
+        "customer_id",
+        "storefront",
+        "placed_at",
+        "delivered_at",
+        "status",
+        "currency",
+        "total_minor",
+        "items",
+        "payment"
+      ],
+      "title": "Order",
+      "type": "object"
+    },
+    "OrderItem": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "qty": {
+          "title": "Qty",
+          "type": "integer"
+        },
+        "sku": {
+          "title": "Sku",
+          "type": "string"
+        },
+        "unit_price_minor": {
+          "title": "Unit Price Minor",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sku",
+        "name",
+        "qty",
+        "unit_price_minor"
+      ],
+      "title": "OrderItem",
+      "type": "object"
+    },
+    "Outcome": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "enum": [
+            "correct_payment",
+            "wrong_payment",
+            "correct_stop",
+            "false_stop"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "disposition": {
+          "enum": [
+            "paid",
+            "denied",
+            "escalated",
+            "blocked",
+            "held_for_review"
+          ],
+          "title": "Disposition",
+          "type": "string"
+        },
+        "harm": {
+          "$ref": "#/$defs/Harm"
+        }
+      },
+      "required": [
+        "disposition",
+        "classification",
+        "harm"
+      ],
+      "title": "Outcome",
+      "type": "object"
+    },
+    "PatchOp": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "enum": [
+            "add",
+            "replace",
+            "remove"
+          ],
+          "title": "Op",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "value": {
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ],
+      "title": "PatchOp",
+      "type": "object"
+    },
+    "Payment": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_minor": {
+          "title": "Captured Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "method": {
+          "enum": [
+            "card",
+            "bank_debit",
+            "wallet"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "captured",
+            "reversed",
+            "voided"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "method",
+        "captured_minor",
+        "currency"
+      ],
+      "title": "Payment",
+      "type": "object"
+    },
+    "Policy": {
+      "additionalProperties": false,
+      "properties": {
+        "auto_approve_limit_minor": {
+          "title": "Auto Approve Limit Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "refund_window_days": {
+          "title": "Refund Window Days",
+          "type": "integer"
+        },
+        "version": {
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "version",
+        "auto_approve_limit_minor",
+        "currency",
+        "refund_window_days"
+      ],
+      "title": "Policy",
+      "type": "object"
+    },
+    "Refund": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "issued_at": {
+          "title": "Issued At",
+          "type": "string"
+        },
+        "issued_by": {
+          "title": "Issued By",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Note"
+        },
+        "order_id": {
+          "title": "Order Id",
+          "type": "string"
+        },
+        "refund_id": {
+          "title": "Refund Id",
+          "type": "string"
+        },
+        "ticket_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ticket Id"
+        }
+      },
+      "required": [
+        "refund_id",
+        "order_id",
+        "ticket_id",
+        "amount_minor",
+        "currency",
+        "issued_at",
+        "issued_by",
+        "note"
+      ],
+      "title": "Refund",
+      "type": "object"
+    },
+    "RegressionSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "changed_on_frozen_state": {
+          "title": "Changed On Frozen State",
+          "type": "integer"
+        },
+        "changed_on_live_state": {
+          "title": "Changed On Live State",
+          "type": "integer"
+        },
+        "scenarios_with_state_change": {
+          "title": "Scenarios With State Change",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "scenarios_with_state_change",
+        "changed_on_live_state",
+        "changed_on_frozen_state"
+      ],
+      "title": "RegressionSummary",
+      "type": "object"
+    },
+    "ReturnInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Detail"
+        },
+        "status": {
+          "enum": [
+            "not_required",
+            "label_created",
+            "in_transit",
+            "received",
+            "rejected"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "updated_at": {
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "updated_at",
+        "detail"
+      ],
+      "title": "ReturnInfo",
+      "type": "object"
+    },
+    "RuleResult": {
+      "additionalProperties": false,
+      "properties": {
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "observed": {
+          "additionalProperties": true,
+          "title": "Observed",
+          "type": "object"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "reads": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reads",
+          "type": "array"
+        },
+        "rule_id": {
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "block",
+            "review"
+          ],
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rule_id",
+        "severity",
+        "passed",
+        "observed",
+        "message",
+        "reads"
+      ],
+      "title": "RuleResult",
+      "type": "object"
+    },
+    "RuleSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "block",
+            "review"
+          ],
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "description",
+        "severity"
+      ],
+      "title": "RuleSpec",
+      "type": "object"
+    },
+    "RunInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "llm_mode": {
+          "enum": [
+            "replay",
+            "record",
+            "live"
+          ],
+          "title": "Llm Mode",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "recorded_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Recorded At"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "timings_included": {
+          "title": "Timings Included",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "run_id",
+        "llm_mode",
+        "model",
+        "recorded_at",
+        "currency",
+        "timings_included"
+      ],
+      "title": "RunInfo",
+      "type": "object"
+    },
+    "Scenario": {
+      "additionalProperties": false,
+      "properties": {
+        "expected": {
+          "$ref": "#/$defs/Expected"
+        },
+        "hero": {
+          "title": "Hero",
+          "type": "boolean"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "mutation",
+            "control",
+            "stale_denial",
+            "gate_blind_spot"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "mutation": {
+          "$ref": "#/$defs/Mutation"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "slug": {
+          "title": "Slug",
+          "type": "string"
+        },
+        "story": {
+          "$ref": "#/$defs/Story"
+        },
+        "t0": {
+          "$ref": "#/$defs/Snapshot"
+        },
+        "ticket_id": {
+          "title": "Ticket Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "slug",
+        "title",
+        "kind",
+        "hero",
+        "story",
+        "ticket_id",
+        "t0",
+        "mutation",
+        "expected"
+      ],
+      "title": "Scenario",
+      "type": "object"
+    },
+    "ScenarioRun": {
+      "additionalProperties": false,
+      "properties": {
+        "arms": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ArmRun"
+          },
+          "propertyNames": {
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "required": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "title": "Arms",
+          "type": "object"
+        },
+        "scenario": {
+          "$ref": "#/$defs/Scenario"
+        },
+        "state_diff": {
+          "items": {
+            "$ref": "#/$defs/FieldChange"
+          },
+          "title": "State Diff",
+          "type": "array"
+        },
+        "t0": {
+          "$ref": "#/$defs/T0Run"
+        },
+        "t1_state": {
+          "$ref": "#/$defs/WorldState"
+        }
+      },
+      "required": [
+        "scenario",
+        "t1_state",
+        "state_diff",
+        "t0",
+        "arms"
+      ],
+      "title": "ScenarioRun",
+      "type": "object"
+    },
+    "Snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/WorldState"
+        }
+      },
+      "required": [
+        "at",
+        "state"
+      ],
+      "title": "Snapshot",
+      "type": "object"
+    },
+    "Story": {
+      "additionalProperties": false,
+      "properties": {
+        "setup": {
+          "title": "Setup",
+          "type": "string"
+        },
+        "stakes": {
+          "title": "Stakes",
+          "type": "string"
+        },
+        "twist": {
+          "title": "Twist",
+          "type": "string"
+        }
+      },
+      "required": [
+        "setup",
+        "twist",
+        "stakes"
+      ],
+      "title": "Story",
+      "type": "object"
+    },
+    "Summary": {
+      "additionalProperties": false,
+      "properties": {
+        "by_arm": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ArmSummary"
+          },
+          "propertyNames": {
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "required": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "title": "By Arm",
+          "type": "object"
+        },
+        "regressions": {
+          "$ref": "#/$defs/RegressionSummary"
+        },
+        "t0_eval_passed": {
+          "title": "T0 Eval Passed",
+          "type": "integer"
+        },
+        "t0_eval_total": {
+          "title": "T0 Eval Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "t0_eval_passed",
+        "t0_eval_total",
+        "by_arm",
+        "regressions"
+      ],
+      "title": "Summary",
+      "type": "object"
+    },
+    "T0Eval": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_action": {
+          "enum": [
+            "issue_refund",
+            "deny_refund",
+            "escalate_to_human"
+          ],
+          "title": "Expected Action",
+          "type": "string"
+        },
+        "expected_amount_minor": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected Amount Minor"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "passed",
+        "expected_action",
+        "expected_amount_minor"
+      ],
+      "title": "T0Eval",
+      "type": "object"
+    },
+    "T0Run": {
+      "additionalProperties": false,
+      "properties": {
+        "decision": {
+          "$ref": "#/$defs/AgentDecision"
+        },
+        "eval": {
+          "$ref": "#/$defs/T0Eval"
+        },
+        "llm": {
+          "$ref": "#/$defs/LlmCallRef"
+        }
+      },
+      "required": [
+        "llm",
+        "decision",
+        "eval"
+      ],
+      "title": "T0Run",
+      "type": "object"
+    },
+    "Ticket": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "enum": [
+            "email",
+            "chat",
+            "phone"
+          ],
+          "title": "Channel",
+          "type": "string"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "opened_at": {
+          "title": "Opened At",
+          "type": "string"
+        },
+        "order_id": {
+          "title": "Order Id",
+          "type": "string"
+        },
+        "reason_code": {
+          "enum": [
+            "damaged",
+            "not_as_described",
+            "wrong_item",
+            "changed_mind"
+          ],
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "requested_minor": {
+          "title": "Requested Minor",
+          "type": "integer"
+        },
+        "resolution": {
+          "anyOf": [
+            {
+              "enum": [
+                "refunded",
+                "denied"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Resolution"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "ticket_id": {
+          "title": "Ticket Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ticket_id",
+        "order_id",
+        "channel",
+        "reason_code",
+        "message",
+        "requested_minor",
+        "currency",
+        "opened_at",
+        "status",
+        "resolution"
+      ],
+      "title": "Ticket",
+      "type": "object"
+    },
+    "WorldState": {
+      "additionalProperties": false,
+      "properties": {
+        "customer": {
+          "$ref": "#/$defs/Customer"
+        },
+        "disputes": {
+          "items": {
+            "$ref": "#/$defs/Dispute"
+          },
+          "title": "Disputes",
+          "type": "array"
+        },
+        "notes": {
+          "items": {
+            "$ref": "#/$defs/Note"
+          },
+          "title": "Notes",
+          "type": "array"
+        },
+        "order": {
+          "$ref": "#/$defs/Order"
+        },
+        "policy": {
+          "$ref": "#/$defs/Policy"
+        },
+        "refunds": {
+          "items": {
+            "$ref": "#/$defs/Refund"
+          },
+          "title": "Refunds",
+          "type": "array"
+        },
+        "return_info": {
+          "$ref": "#/$defs/ReturnInfo"
+        },
+        "tickets": {
+          "items": {
+            "$ref": "#/$defs/Ticket"
+          },
+          "title": "Tickets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "order",
+        "customer",
+        "return_info",
+        "refunds",
+        "disputes",
+        "tickets",
+        "notes",
+        "policy"
+      ],
+      "title": "WorldState",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "arms": {
+      "items": {
+        "$ref": "#/$defs/ArmSpec"
+      },
+      "title": "Arms",
+      "type": "array"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/RuleSpec"
+      },
+      "title": "Rules",
+      "type": "array"
+    },
+    "run": {
+      "$ref": "#/$defs/RunInfo"
+    },
+    "scenarios": {
+      "items": {
+        "$ref": "#/$defs/ScenarioRun"
+      },
+      "title": "Scenarios",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "summary": {
+      "$ref": "#/$defs/Summary"
+    }
+  },
+  "required": [
+    "schema_version",
+    "run",
+    "arms",
+    "rules",
+    "scenarios",
+    "summary"
+  ],
+  "title": "RunArtifact",
+  "type": "object"
+}

@@ -1,0 +1,115 @@
+{
+  "expected": {
+    "arm_c": "wrong_payment",
+    "arm_d": "wrong_payment",
+    "gate": {
+      "failed_rules": [],
+      "verdict": "allow"
+    },
+    "harm_if_paid": {
+      "amount_minor": 6000,
+      "explanation": "The customer was already refunded $60.00 off the ledger.",
+      "type": "double_payment"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 6000,
+    "t1_should_pay": false,
+    "why": "The earlier refund exists only as free text, so structured rules cannot see it."
+  },
+  "hero": false,
+  "id": "F05",
+  "kind": "gate_blind_spot",
+  "mutation": {
+    "actor": "support",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "off_ledger_refund",
+    "label": "Refund noted, not on the ledger",
+    "narrative": "A phone agent refunded the order in the processor dashboard and left a free-text note.",
+    "ops": [
+      {
+        "op": "add",
+        "path": "/notes/-",
+        "value": {
+          "at": "2026-10-12T13:45:00Z",
+          "author": "phone-agent",
+          "text": "Refunded $60.00 for the damaged item directly in the processor dashboard."
+        }
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "slug": "fixture-off-ledger-refund",
+  "story": {
+    "setup": "A customer asks for a $60.00 refund for a damaged item.",
+    "stakes": "A second refund would pay the customer twice, and no structured field shows it.",
+    "twist": "A phone agent refunds $60.00 in the processor dashboard and only leaves a note."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-F50",
+        "email": "fixture5@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Fixture Customer 5",
+        "shipping_address": "5 Fixture Lane, Testville, ZZ 00000",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-F50",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Fixture item 5",
+            "qty": 1,
+            "sku": "SKU-F5-1",
+            "unit_price_minor": 6000
+          }
+        ],
+        "order_id": "ORD-F50",
+        "payment": {
+          "captured_minor": 6000,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 6000
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": null,
+        "status": "not_required",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "Fixture ticket 5: please refund my order.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-F50",
+          "reason_code": "damaged",
+          "requested_minor": 6000,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-F51"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-F51",
+  "title": "Fixture: refund made off the ledger"
+}

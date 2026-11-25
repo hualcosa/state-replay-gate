@@ -1,0 +1,15 @@
+.DS_Store
+.env
+.env.*
+.venv/
+runs/
+recordings.new/
+recordings.old/
+web/public/data/run.json
+web/node_modules/
+web/dist/
+web/screenshots/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.codegraph/

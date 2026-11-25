@@ -1,0 +1,118 @@
+{
+  "expected": {
+    "arm_c": "wrong_payment",
+    "arm_d": "correct_stop",
+    "gate": {
+      "failed_rules": [
+        "within_auto_approve_limit"
+      ],
+      "verdict": "review"
+    },
+    "harm_if_paid": {
+      "amount_minor": 30000,
+      "explanation": "$300.00 paid without the approval the new limit requires.",
+      "type": "unapproved_payout"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 30000,
+    "t1_should_pay": false,
+    "why": "The amount is above the lowered auto-approve limit, so it needs human review."
+  },
+  "hero": false,
+  "id": "F02",
+  "kind": "mutation",
+  "mutation": {
+    "actor": "finance",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "auto_approve_limit_lowered",
+    "label": "Auto-approve limit $500 to $200",
+    "narrative": "Finance lowered the auto-approve limit to $200.00 in policy v8.",
+    "ops": [
+      {
+        "op": "replace",
+        "path": "/policy/auto_approve_limit_minor",
+        "value": 20000
+      },
+      {
+        "op": "replace",
+        "path": "/policy/version",
+        "value": 8
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "slug": "fixture-limit-lowered",
+  "story": {
+    "setup": "A customer asks for a $300.00 refund for an item not as described, and the return was received.",
+    "stakes": "A $300.00 refund now needs a human approval.",
+    "twist": "Finance lowers the auto-approve limit from $500.00 to $200.00."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-F20",
+        "email": "fixture2@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Fixture Customer 2",
+        "shipping_address": "2 Fixture Lane, Testville, ZZ 00000",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-F20",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Fixture item 2",
+            "qty": 1,
+            "sku": "SKU-F2-1",
+            "unit_price_minor": 30000
+          }
+        ],
+        "order_id": "ORD-F20",
+        "payment": {
+          "captured_minor": 30000,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 30000
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": null,
+        "status": "received",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "Fixture ticket 2: please refund my order.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-F20",
+          "reason_code": "not_as_described",
+          "requested_minor": 30000,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-F21"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-F21",
+  "title": "Fixture: auto-approve limit lowered"
+}

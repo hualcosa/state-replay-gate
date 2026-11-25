@@ -1,0 +1,113 @@
+{
+  "expected": {
+    "arm_c": "wrong_payment",
+    "arm_d": "correct_stop",
+    "gate": {
+      "failed_rules": [
+        "payment_captured"
+      ],
+      "verdict": "block"
+    },
+    "harm_if_paid": {
+      "amount_minor": 8900,
+      "explanation": "$89.00 would be refunded on a payment that was never collected.",
+      "type": "unpaid_order_refund"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 8900,
+    "t1_should_pay": false,
+    "why": "The payment was reversed, so there is no collected money to refund."
+  },
+  "hero": false,
+  "id": "S07",
+  "kind": "mutation",
+  "mutation": {
+    "actor": "payment processor",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "payment_reversed",
+    "label": "Bank debit reversed",
+    "narrative": "The bank returned the debit and the payment processor marked the payment as reversed.",
+    "ops": [
+      {
+        "op": "replace",
+        "path": "/order/payment/status",
+        "value": "reversed"
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "slug": "payment-reversed",
+  "story": {
+    "setup": "A customer who paid by bank debit asks for an $89.00 refund because a lamp arrived broken.",
+    "stakes": "Refunding now would send $89.00 the business never collected.",
+    "twist": "The bank returns the debit, and the payment processor marks the payment as reversed."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-20123",
+        "email": "nadia.petrov@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Nadia Petrov",
+        "shipping_address": "6 Sorrel Lane, Eastbrook, ZZ 00707",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-20123",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Ceramic table lamp",
+            "qty": 1,
+            "sku": "LMP-CER-01",
+            "unit_price_minor": 8900
+          }
+        ],
+        "order_id": "ORD-48107",
+        "payment": {
+          "captured_minor": 8900,
+          "currency": "USD",
+          "method": "bank_debit",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 8900
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": null,
+        "status": "not_required",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "The lamp base arrived in three pieces. I paid by bank transfer and would like the money back.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-48107",
+          "reason_code": "damaged",
+          "requested_minor": 8900,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-90107"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-90107",
+  "title": "The bank returns the debit"
+}

@@ -1,0 +1,128 @@
+{
+  "expected": {
+    "arm_c": "wrong_payment",
+    "arm_d": "correct_stop",
+    "gate": {
+      "failed_rules": [
+        "amount_within_refundable_balance"
+      ],
+      "verdict": "block"
+    },
+    "harm_if_paid": {
+      "amount_minor": 8000,
+      "explanation": "$80.00 more than the order's remaining refundable balance of $120.00.",
+      "type": "overpayment"
+    },
+    "t0_action": "issue_refund",
+    "t0_amount_minor": 20000,
+    "t1_should_pay": false,
+    "why": "Only $120.00 of the captured $200.00 is still refundable, so the $200.00 request would overpay."
+  },
+  "hero": false,
+  "id": "S02",
+  "kind": "mutation",
+  "mutation": {
+    "actor": "support",
+    "at": "2026-10-12T14:00:00Z",
+    "kind": "partial_refund_issued",
+    "label": "Goodwill refund issued",
+    "narrative": "A support agent issued an $80.00 goodwill refund on the order, with no ticket attached.",
+    "ops": [
+      {
+        "op": "add",
+        "path": "/refunds/-",
+        "value": {
+          "amount_minor": 8000,
+          "currency": "USD",
+          "issued_at": "2026-10-11T16:30:00Z",
+          "issued_by": "support agent",
+          "note": "Goodwill gesture for the late delivery.",
+          "order_id": "ORD-48102",
+          "refund_id": "RFD-5521",
+          "ticket_id": null
+        }
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "slug": "partial-refund-issued",
+  "story": {
+    "setup": "A customer asks for the full $200.00 back on a two-item order because neither item matches its listing.",
+    "stakes": "Paying the full $200.00 now would refund $80.00 more than the order has left.",
+    "twist": "A support agent issues an $80.00 goodwill refund on the order without linking it to any ticket."
+  },
+  "t0": {
+    "at": "2026-10-10T09:00:00Z",
+    "state": {
+      "customer": {
+        "customer_id": "CUS-20118",
+        "email": "daniel.brandt@example.com",
+        "fraud_flag": false,
+        "fraud_reason": null,
+        "name": "Daniel Brandt",
+        "shipping_address": "9 Kestrel Way, Lakeside, ZZ 00209",
+        "tier": "standard"
+      },
+      "disputes": [],
+      "notes": [],
+      "order": {
+        "currency": "USD",
+        "customer_id": "CUS-20118",
+        "delivered_at": "2026-10-05T15:00:00Z",
+        "items": [
+          {
+            "name": "Ceramic dinner set",
+            "qty": 1,
+            "sku": "DIN-CER-08",
+            "unit_price_minor": 12000
+          },
+          {
+            "name": "Linen table runner",
+            "qty": 1,
+            "sku": "RUN-LIN-02",
+            "unit_price_minor": 8000
+          }
+        ],
+        "order_id": "ORD-48102",
+        "payment": {
+          "captured_minor": 20000,
+          "currency": "USD",
+          "method": "card",
+          "status": "captured"
+        },
+        "placed_at": "2026-10-01T10:00:00Z",
+        "status": "delivered",
+        "storefront": "us",
+        "total_minor": 20000
+      },
+      "policy": {
+        "auto_approve_limit_minor": 50000,
+        "currency": "USD",
+        "refund_window_days": 30,
+        "version": 7
+      },
+      "refunds": [],
+      "return_info": {
+        "detail": "Carrier scan: picked up from customer",
+        "status": "in_transit",
+        "updated_at": "2026-10-09T09:00:00Z"
+      },
+      "tickets": [
+        {
+          "channel": "email",
+          "currency": "USD",
+          "message": "Neither the dinner set nor the runner matches the listing: the glaze is darker and the linen is much coarser. Both are on their way back, and I would like the full $200.00 refunded.",
+          "opened_at": "2026-10-10T08:00:00Z",
+          "order_id": "ORD-48102",
+          "reason_code": "not_as_described",
+          "requested_minor": 20000,
+          "resolution": null,
+          "status": "open",
+          "ticket_id": "TCK-90102"
+        }
+      ]
+    }
+  },
+  "ticket_id": "TCK-90102",
+  "title": "A goodwill refund lands off-ticket"
+}

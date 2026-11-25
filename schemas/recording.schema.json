@@ -1,0 +1,75 @@
+{
+  "$defs": {
+    "RecordedSample": {
+      "additionalProperties": false,
+      "properties": {
+        "latency_ms": {
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "recorded_at": {
+          "title": "Recorded At",
+          "type": "string"
+        },
+        "response": {
+          "additionalProperties": true,
+          "title": "Response",
+          "type": "object"
+        },
+        "sample": {
+          "title": "Sample",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sample",
+        "response",
+        "latency_ms",
+        "recorded_at"
+      ],
+      "title": "RecordedSample",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "labels": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Labels",
+      "type": "array"
+    },
+    "request": {
+      "additionalProperties": true,
+      "title": "Request",
+      "type": "object"
+    },
+    "request_hash": {
+      "title": "Request Hash",
+      "type": "string"
+    },
+    "samples": {
+      "items": {
+        "$ref": "#/$defs/RecordedSample"
+      },
+      "title": "Samples",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_hash",
+    "labels",
+    "request",
+    "samples"
+  ],
+  "title": "Recording",
+  "type": "object"
+}
